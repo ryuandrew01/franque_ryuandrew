@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> USERS</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            margin: 0; 
+            font-family: 'Trebuchet MS', Arial, sans-serif; 
+            color: #ffffff; 
+            background: linear-gradient(160deg, #0a0a2a, #1b1b3a, #2e2e5a); 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .bg-decor { 
+            position: fixed; 
+            inset: 0; 
+            z-index: -1; 
+            pointer-events: none; 
+            background:
+                radial-gradient(600px 600px at 0% 0%, rgba(65,105,225,.15), transparent 60%),
+                radial-gradient(600px 600px at 100% 0%, rgba(30,144,255,.12), transparent 60%),
+                radial-gradient(600px 600px at 0% 100%, rgba(0,255,127,.1), transparent 60%),
+                radial-gradient(600px 600px at 100% 100%, rgba(255,215,0,.1), transparent 60%);
+            animation: floatBg 16s ease-in-out infinite alternate; 
+        }
+
+        .container { 
+            width: 100%; 
+            max-width: 1000px; 
+            padding: 0 16px; 
+        }
+
+        .card { 
+            background: rgba(20,20,40,0.92);
+            border: 3px solid #4169e1; 
+            border-radius: 20px; 
+            box-shadow: 0 0 25px rgba(65,105,225,0.6), 0 0 40px rgba(255,215,0,0.25); 
+            overflow: hidden; 
+            transform: translateY(0); 
+            opacity: 0; 
+            animation: cardIn 1s ease-out forwards, floatCard 6s ease-in-out infinite;
+        }
+
+        .card-header { 
+            padding: 24px; 
+            background: linear-gradient(135deg, #1a1a3f 0%, #2b2b60 100%);
+            border-bottom: 3px solid #4169e1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title { 
+            margin: 0; 
+            font-size: 28px; 
+            font-weight: 900; 
+            color: #ffd700; 
+            text-shadow: 0 0 12px rgba(255,215,0,0.8), 0 0 20px rgba(30,144,255,0.6);
+        }
+
+        .btn { 
+            padding: 6px 12px; 
+            border-radius: 10px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: transform .1s ease, box-shadow .3s ease, background .3s ease;
+            margin-left: 8px;
+            text-decoration: none; /* remove underline */
+        }
+        .btn:active { transform: translateY(2px); }
+
+        /* Add User button in yellow */
+        .btn-primary { 
+            background: linear-gradient(135deg, #ffd700 0%, #ffea00 100%); 
+            color: #1a1a1a; 
+        }
+
+        .btn-edit { 
+            background: linear-gradient(135deg, #ff6347 0%, #ff0000 100%); 
+            color: white; 
+        }
+        .btn-edit:hover { 
+            background: linear-gradient(135deg, #cc0000 0%, #8b0000 100%); 
+        }
+
+        .btn-delete { 
+            background: linear-gradient(135deg, #8b0000 0%, #4b0000 100%); 
+            color: white; 
+        }
+        .btn-delete:hover { 
+            background: linear-gradient(135deg, #660000 0%, #330000 100%); 
+        }
+
+        .table-wrapper { 
+            overflow-x: auto; 
+            padding: 20px; 
+            background: rgba(255,255,255,0.05); 
+        }
+
+        table { 
+            border-collapse: collapse; 
+            width: 100%; 
+            font-size: 16px; 
+            color: white;
+        }
+        th, td { 
+            padding: 14px 16px; 
+            text-align: left; 
+            border-bottom: 1px solid rgba(255,255,255,0.2); 
+            transition: background 0.3s ease;
+        }
+        th { 
+            background: linear-gradient(135deg, #1e90ff 0%, #0000cd 100%);
+            color: white; 
+            font-weight: 700; 
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+        }
+        tr:hover td { 
+            background: rgba(255,255,255,0.12); 
+            border-radius: 6px;
+        }
+
+        .empty { 
+            text-align: center; 
+            color: #ffd700; 
+            font-style: italic; 
+        }
+
+        @keyframes cardIn { to { opacity: 1; } }
+        @keyframes floatCard { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+        @keyframes floatBg { 0% { background-position: 0% 0%, 100% 0%, 0% 100%, 100% 100%; } 
+                              100% { background-position: 10% 5%, 90% 10%, 5% 90%, 95% 95%; } }
+    </style>
+</head>
+<body>
+    <div class="bg-decor"></div>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="title">⚔ USERS ⚔</h1>
+                <a href="<?= site_url('users/create') ?>" class="btn btn-primary">Add User</a>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                    <?php if (!empty($users)): ?>
+                        <?php foreach($users as $user): ?>
+                        <tr>
+                            <td><?= $user['id'] ?></td>
+                            <td><?= $user['username'] ?></td>
+                            <td><?= $user['email'] ?></td>
+                            <td>
+                                <a href="<?= site_url('users/update/' . $user['id']) ?>" class="btn btn-edit">Edit</a>
+                                <a href="<?= site_url('users/delete/' . $user['id']) ?>" class="btn btn-delete">Delete</a>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="4" class="empty">No users found.</td>
+                        </tr>
+                    <?php endif; ?>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
