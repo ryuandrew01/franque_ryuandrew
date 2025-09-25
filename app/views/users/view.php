@@ -53,6 +53,7 @@
             justify-content: space-between;
             align-items: center;
             gap: 12px;
+            flex-wrap: wrap;
         }
 
         .title { 
@@ -181,6 +182,75 @@
             padding: 0 8px;
         }
 
+        /* Search bar styles - outside card */
+        .search-bar-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .search-form {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(20,20,40,0.9);
+            padding: 16px 24px;
+            border-radius: 15px;
+            border: 2px solid #4169e1;
+            box-shadow: 0 0 20px rgba(65,105,225,0.4);
+        }
+        .search-input {
+            height: 36px;
+            padding: 0 12px;
+            border-radius: 10px;
+            border: 2px solid #4169e1;
+            background: rgba(20,20,40,0.8);
+            color: #fff;
+            font-size: 14px;
+            min-width: 200px;
+            transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 10px rgba(255,215,0,0.3);
+        }
+        .search-input::placeholder {
+            color: #b7c6ff;
+        }
+        .search-btn {
+            height: 36px;
+            padding: 0 16px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, #1e90ff 0%, #0000cd 100%);
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .search-btn:hover {
+            background: linear-gradient(135deg, #3aa0ff 0%, #1e2cff 100%);
+            transform: translateY(-1px);
+        }
+        .clear-search {
+            height: 36px;
+            padding: 0 12px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, #ff6347 0%, #ff0000 100%);
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        .clear-search:hover {
+            background: linear-gradient(135deg, #cc0000 0%, #8b0000 100%);
+            transform: translateY(-1px);
+        }
+
         @keyframes cardIn { to { opacity: 1; } }
         @keyframes floatCard { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
         @keyframes floatBg { 0% { background-position: 0% 0%, 100% 0%, 0% 100%, 100% 100%; } 
@@ -190,6 +260,19 @@
 <body>
     <div class="bg-decor"></div>
     <div class="container">
+        <!-- Search bar outside the card -->
+        <div class="search-bar-container">
+            <form method="GET" class="search-form">
+                <input type="hidden" name="per_page" value="<?= $per_page ?? 10 ?>">
+                <input type="text" name="search" value="<?= htmlspecialchars($search ?? '') ?>" 
+                       placeholder="Search by ID, username, or email..." class="search-input">
+                <button type="submit" class="search-btn">Search</button>
+                <?php if (!empty($search)): ?>
+                    <a href="<?= site_url('users/view') ?>?per_page=<?= $per_page ?? 10 ?>" class="clear-search">Clear</a>
+                <?php endif; ?>
+            </form>
+        </div>
+        
         <div class="card">
             <div class="card-header">
                 <h1 class="title">⚔ USERS ⚔</h1>
@@ -237,6 +320,9 @@
                 $from = max(1, $current - $window);
                 $to = min($last, $current + $window);
                 $q = '&per_page=' . $per;
+                if (!empty($search)) {
+                    $q .= '&search=' . urlencode($search);
+                }
             ?>
             <div class="pagination">
                 <a class="page-btn <?= $current <= 1 ? 'disabled' : '' ?>" href="<?= $base . '?page=' . $prev . $q ?>">« Prev</a>

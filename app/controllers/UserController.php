@@ -9,22 +9,46 @@ class UserController extends Controller
         $this->call->model('UserModel');
     }
 
-    public function view() 
-    {
-        $page = (int) ($_GET['page'] ?? 1);
-        $per_page = (int) ($_GET['per_page'] ?? 10);
-        $per_page = max(1, min(100, $per_page));
-        $pagination = $this->UserModel->paginate($per_page, max($page, 1), [], false, 'id', 'ASC');
-        $data['users'] = $pagination['data'];
-        // Fallback safety: If page 1 shows empty but there are records, show first batch
-        if (empty($data['users']) && $pagination['total'] > 0 && $page === 1) {
-            $all = $this->UserModel->all();
-            $data['users'] = array_slice($all, 0, $per_page);
-        }
-        $data['pagination'] = $pagination;
-        $data['per_page'] = $per_page;
-        $this->call->view('users/view', $data);
-    }
+	public function view() 
+	{
+		$page = (int) ($_GET['page'] ?? 1);
+		$per_page = (int) ($_GET['per_page'] ?? 10);
+		$per_page = max(1, min(100, $per_page));
+		$search = trim($_GET['search'] ?? '');
+		
+		// Get all users first, then filter if search is provided
+		$all_users = $this->UserModel->all();
+		
+		if (!empty($search)) {
+			// Filter users by search term
+			$filtered_users = array_filter($all_users, function($user) use ($search) {
+				$search_lower = strtolower($search);
+				return (
+					strpos(strtolower($user['id']), $search_lower) !== false ||
+					strpos(strtolower($user['username']), $search_lower) !== false ||
+					strpos(strtolower($user['email']), $search_lower) !== false
+				);
+			});
+			$all_users = array_values($filtered_users);
+		}
+		
+		// Manual pagination
+		$total = count($all_users);
+		$offset = ($page - 1) * $per_page;
+		$users = array_slice($all_users, $offset, $per_page);
+		
+		$data['users'] = $users;
+		$data['pagination'] = [
+			'data' => $users,
+			'total' => $total,
+			'per_page' => $per_page,
+			'current_page' => $page,
+			'last_page' => (int) ceil($total / max(1, $per_page))
+		];
+		$data['per_page'] = $per_page;
+		$data['search'] = $search;
+		$this->call->view('users/view', $data);
+	}
 
     public function create() 
     {
