@@ -205,22 +205,31 @@ class Model {
     public function paginate($per_page = 10, $page = 1, $conditions = [], $with_deleted = false)
     {
         $offset = ($page - 1) * $per_page;
+        // Count with filters applied
         $this->db->table($this->table);
         $this->apply_soft_delete($with_deleted);
-        
         if (!empty($conditions)) {
             $this->db->where($conditions);
         }
-        
         $total = $this->db->count();
-        $results = $this->db->table($this->table)->limit($per_page, $offset)->get_all();
+
+        // Fetch page with deterministic ordering and correct limit arguments (offset, count)
+        $this->db->table($this->table);
+        $this->apply_soft_delete($with_deleted);
+        if (!empty($conditions)) {
+            $this->db->where($conditions);
+        }
+        $results = $this->db
+            ->order_by($this->primary_key, 'ASC')
+            ->limit($offset, $per_page)
+            ->get_all();
         
         return [
             'data' => $results,
-            'total' => $total,
-            'per_page' => $per_page,
-            'current_page' => $page,
-            'last_page' => ceil($total / $per_page)
+            'total' => (int) $total,
+            'per_page' => (int) $per_page,
+            'current_page' => (int) $page,
+            'last_page' => (int) ceil($total / max(1, $per_page))
         ];
     }
 

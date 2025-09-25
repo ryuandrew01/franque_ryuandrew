@@ -11,7 +11,18 @@ class UserController extends Controller
 
     public function view() 
     {
-        $data['users'] = $this->UserModel->all();
+        $page = (int) ($_GET['page'] ?? 1);
+        $per_page = (int) ($_GET['per_page'] ?? 10);
+        $per_page = max(1, min(100, $per_page));
+        $pagination = $this->UserModel->paginate($per_page, max($page, 1), [], false, 'id', 'ASC');
+        $data['users'] = $pagination['data'];
+        // Fallback safety: If page 1 shows empty but there are records, show first batch
+        if (empty($data['users']) && $pagination['total'] > 0 && $page === 1) {
+            $all = $this->UserModel->all();
+            $data['users'] = array_slice($all, 0, $per_page);
+        }
+        $data['pagination'] = $pagination;
+        $data['per_page'] = $per_page;
         $this->call->view('users/view', $data);
     }
 

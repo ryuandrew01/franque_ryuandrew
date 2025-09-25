@@ -52,6 +52,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 12px;
         }
 
         .title { 
@@ -130,6 +131,56 @@
             font-style: italic; 
         }
 
+        /* Pagination styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 20px 24px;
+            background: rgba(255,255,255,0.05);
+            border-top: 1px solid rgba(255,255,255,0.15);
+            flex-wrap: wrap;
+        }
+        .page-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            padding: 0 10px;
+            border-radius: 10px;
+            color: #fff;
+            text-decoration: none;
+            background: linear-gradient(135deg, #1e90ff 0%, #0000cd 100%);
+            box-shadow: 0 0 12px rgba(65,105,225,0.5);
+        }
+        .page-btn:hover { background: linear-gradient(135deg, #3aa0ff 0%, #1e2cff 100%); }
+        .page-btn.disabled { opacity: .4; pointer-events: none; }
+        .page-btn.active {
+            background: linear-gradient(135deg, #ffd700 0%, #ffea00 100%);
+            color: #1a1a1a;
+            box-shadow: 0 0 14px rgba(255,215,0,0.7);
+            font-weight: 800;
+        }
+        .page-stats { color: #b7c6ff; margin-left: 12px; font-size: 14px; }
+
+        .per-page {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #b7c6ff;
+        }
+        .per-page select {
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid #4169e1;
+            background: #1b1b3a;
+            color: #fff;
+            padding: 0 8px;
+        }
+
         @keyframes cardIn { to { opacity: 1; } }
         @keyframes floatCard { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
         @keyframes floatBg { 0% { background-position: 0% 0%, 100% 0%, 0% 100%, 100% 100%; } 
@@ -171,6 +222,50 @@
                     <?php endif; ?>
                 </table>
             </div>
+            <?php if (isset($pagination) && !empty($pagination['last_page'])): ?>
+            <?php 
+                $current = (int) $pagination['current_page'];
+                $last = (int) max(1, $pagination['last_page']);
+                $per = isset($per_page) ? (int)$per_page : (int) $pagination['per_page'];
+                $total = (int) $pagination['total'];
+                $base = site_url('users/view');
+                $prev = max(1, $current - 1);
+                $next = min($last, $current + 1);
+                $start = ($current - 1) * $per + 1;
+                $end = min($total, $current * $per);
+                $window = 2; // show current +/-2
+                $from = max(1, $current - $window);
+                $to = min($last, $current + $window);
+                $q = '&per_page=' . $per;
+            ?>
+            <div class="pagination">
+                <a class="page-btn <?= $current <= 1 ? 'disabled' : '' ?>" href="<?= $base . '?page=' . $prev . $q ?>">« Prev</a>
+                <?php if ($from > 1): ?>
+                    <a class="page-btn" href="<?= $base . '?page=1' . $q ?>">1</a>
+                    <?php if ($from > 2): ?><span class="page-stats">…</span><?php endif; ?>
+                <?php endif; ?>
+
+                <?php for ($i = $from; $i <= $to; $i++): ?>
+                    <a class="page-btn <?= $i === $current ? 'active' : '' ?>" href="<?= $base . '?page=' . $i . $q ?>"><?= $i ?></a>
+                <?php endfor; ?>
+
+                <?php if ($to < $last): ?>
+                    <?php if ($to < $last - 1): ?><span class="page-stats">…</span><?php endif; ?>
+                    <a class="page-btn" href="<?= $base . '?page=' . $last . $q ?>"><?= $last ?></a>
+                <?php endif; ?>
+
+                <a class="page-btn <?= $current >= $last ? 'disabled' : '' ?>" href="<?= $base . '?page=' . $next . $q ?>">Next »</a>
+                <span class="page-stats">Showing <?= $total ? $start : 0 ?>–<?= $total ? $end : 0 ?> of <?= $total ?></span>
+                <span class="per-page">
+                    Rows per page:
+                    <select onchange="location.href='<?= $base ?>?page=1&per_page=' + this.value">
+                        <?php foreach ([5,10,20,50] as $opt): ?>
+                            <option value="<?= $opt ?>" <?= $per == $opt ? 'selected' : '' ?>><?= $opt ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </span>
+            </div>
+            <?php endif; ?>
         </div>
     </div>
 </body>
