@@ -79,7 +79,7 @@ $config['ENVIRONMENT']             = 'development';
 | WARNING: You MUST set this value!
 |
 */
-$config['base_url'] 				= 'http://localhost/Act%205/LavaLust/franque_ryuandrew/';
+$config['base_url'] 				= 'https://franque-crud.onrender.com';
 
 /*
 |--------------------------------------------------------------------------
