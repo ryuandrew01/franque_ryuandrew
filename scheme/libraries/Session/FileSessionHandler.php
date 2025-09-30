@@ -78,12 +78,29 @@ class FileSessionHandler extends Session implements SessionHandlerInterface {
      * @return bool
      */
     public function open($save_path, $session_name): bool {
-        $this->save_path = $save_path;
-        $this->file_path = $this->save_path.DIRECTORY_SEPARATOR.$session_name . '_';
-        if ( !is_dir($this->save_path) ) {
-            mkdir($this->save_path, 0700, TRUE);
+        // Normalize and resolve a valid save path
+        $path = trim((string) $save_path);
+        if ($path === '') {
+            $path = (string) $this->save_path; // set in constructor from config/php.ini
         }
-        return true;
+        // Handle formats like "N;MODE;/path" → use last segment as real path
+        if (strpos($path, ';') !== false) {
+            $parts = explode(';', $path);
+            $path = end($parts);
+        }
+        // Convert to absolute path if relative
+        if ($path !== '' && $path[0] !== DIRECTORY_SEPARATOR && strpos($path, ':') === false) {
+            $path = rtrim(ROOT_DIR, '/\\') . DIRECTORY_SEPARATOR . ltrim($path, '/\\');
+        }
+
+        $this->save_path = rtrim($path, '/\\');
+        $this->file_path = $this->save_path . DIRECTORY_SEPARATOR . $session_name . '_';
+
+        if (!is_dir($this->save_path)) {
+            @mkdir($this->save_path, 0700, true);
+        }
+
+        return is_dir($this->save_path);
     }
 
     /**
