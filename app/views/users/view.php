@@ -250,6 +250,18 @@
             background: linear-gradient(135deg, #cc0000 0%, #8b0000 100%);
             transform: translateY(-1px);
         }
+        .btn-logout {
+            color: #0a0a09ff;
+            font-weight: bold;
+            padding: 10px 22px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
+            border: 2px solid #ffa500;
+            box-shadow: 0 0 14px rgba(255,215,0,0.7);
+            text-decoration: none;
+            display: inline-block;
+            transition: transform .15s ease, box-shadow .3s ease;
+        }
 
         @keyframes cardIn { to { opacity: 1; } }
         @keyframes floatCard { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
@@ -350,6 +362,10 @@
                         <?php endforeach; ?>
                     </select>
                 </span>
+                <a href="<?= site_url('auth/logout'); ?>" 
+                    class="btn-logout" onclick="return confirm('Are you sure you want to log out?');">
+                    Logout</a>
+                </a>
             </div>
             <?php endif; ?>
         </div>
