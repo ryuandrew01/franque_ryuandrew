@@ -9,3 +9,4 @@ if (file_exists(__DIR__ . $uri) && $uri !== '/') {
 
 // Otherwise, route everything through index.php
 require_once __DIR__ . '/index.php';
+

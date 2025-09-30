@@ -34,12 +34,9 @@ public function register()
             // ✅ Get the user's role after successful login
             $role = $this->session->userdata('role');
 
-            // ✅ Redirect based on role
-            if ($role === 'admin') {
-                redirect('users/view'); // admin → table page
-            } else {
-                redirect('auth/dashboard'); // user → dashboard
-            }
+            // Redirect to dashboard (top-right logout available)
+            redirect('auth/dashboard');
+            
             
         } else {
             echo 'Login failed!';

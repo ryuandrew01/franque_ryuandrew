@@ -195,6 +195,10 @@ class Welcome extends Controller {
             <?php if(config_item('ENVIRONMENT') === 'development'): ?>
                 <br>LavaLust Version <strong><?php echo config_item('VERSION'); ?></strong>
             <?php endif; ?>
+            <div style="margin-top: 12px;">
+                <a href="<?php echo site_url('auth/login'); ?>" style="display:inline-block;margin:0 6px;padding:8px 14px;background:#ffffff;color:#111827;border:1px solid #cbd5e1;border-radius:6px;">Login</a>
+                <a href="<?php echo site_url('auth/register'); ?>" style="display:inline-block;margin:0 6px;padding:8px 14px;background:#ffffff;color:#111827;border:1px solid #cbd5e1;border-radius:6px;">Register</a>
+            </div>
         </div>
     </div>
 </body>
