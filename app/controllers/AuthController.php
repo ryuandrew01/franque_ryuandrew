@@ -34,11 +34,11 @@ public function register()
             // Get the user's role after successful login
             $role = $this->session->userdata('role');
 
-            // Redirect based on role
+            // Redirect based on role: admin -> users/view, others -> auth/dashboard
             if ($role === 'admin') {
-                redirect('auth/admin-dashboard');
+                redirect('users/view');
             } else {
-                redirect('auth/user-dashboard');
+                redirect('auth/dashboard');
             }
             
             
@@ -50,22 +50,13 @@ public function register()
     $this->call->view('auth/login');
     }
 
-    public function adminDashboard()
+    public function dashboard()
     {
         $this->call->library('auth');
-        if (!$this->auth->is_logged_in() || !$this->auth->has_role('admin')) {
+        if (!$this->auth->is_logged_in()) {
             redirect('auth/login');
         }
-        $this->call->view('auth/admin_dashboard');
-    }
-
-    public function userDashboard()
-    {
-        $this->call->library('auth');
-        if (!$this->auth->is_logged_in() || !$this->auth->has_role('user')) {
-            redirect('auth/login');
-        }
-        $this->call->view('auth/user_dashboard');
+        $this->call->view('auth/dashboard');
     }
 
 
