@@ -31,11 +31,15 @@ public function register()
 
         if ($this->auth->login($username, $password)) {
 
-            // ✅ Get the user's role after successful login
+            // Get the user's role after successful login
             $role = $this->session->userdata('role');
 
-            // Redirect to dashboard (top-right logout available)
-            redirect('auth/dashboard');
+            // Redirect based on role
+            if ($role === 'admin') {
+                redirect('auth/admin-dashboard');
+            } else {
+                redirect('auth/user-dashboard');
+            }
             
             
         } else {
@@ -46,21 +50,22 @@ public function register()
     $this->call->view('auth/login');
     }
 
-    public function dashboard()
+    public function adminDashboard()
     {
         $this->call->library('auth');
-
-        if (!$this->auth->is_logged_in()) {
+        if (!$this->auth->is_logged_in() || !$this->auth->has_role('admin')) {
             redirect('auth/login');
         }
+        $this->call->view('auth/admin_dashboard');
+    }
 
-        if (!$this->auth->has_role('admin') && !$this->auth->has_role('user')) {
-            echo 'Access denied!';
-            exit;
+    public function userDashboard()
+    {
+        $this->call->library('auth');
+        if (!$this->auth->is_logged_in() || !$this->auth->has_role('user')) {
+            redirect('auth/login');
         }
-
-
-        $this->call->view('auth/dashboard');
+        $this->call->view('auth/user_dashboard');
     }
 
 

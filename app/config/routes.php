@@ -22,6 +22,7 @@ $router->match('/users/delete/{id}', 'UserController::delete', ['GET', 'POST']);
  $router->match('/auth/login', 'AuthController::login', ['GET', 'POST']);
  $router->match('/auth/register', 'AuthController::register', ['GET', 'POST']);
  
- # Dashboard and logout
- $router->get('/auth/dashboard', 'AuthController::dashboard');
+ # Dashboards and logout
+ $router->get('/auth/admin-dashboard', 'AuthController::adminDashboard');
+ $router->get('/auth/user-dashboard', 'AuthController::userDashboard');
  $router->get('/auth/logout', 'AuthController::logout');
